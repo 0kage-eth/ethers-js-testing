@@ -1,0 +1,41 @@
+In this exercise, we learnt
+
+1. how to initialize provider - new ethers.providers.jsonRpcProvider(<alchemy url>)
+
+2. once we have provider, we can get wallet balance of any address
+   const balance = await provider.getBalance(<address>)
+
+3. you can get block number
+   const blockNumber = await provider.getBlockNumber()
+
+4. Signer is an abstraction of a account object - and helps us to sign txns
+   In our case, we use another object that inherits from signer - wallet
+
+const wallet = new ethers.Wallet(<PRIVATE KEY>, <provider object>)
+
+This will create a wallet object that is connected to provider
+
+5. We can get wallet address and wallet balance
+   const balance = await wallet.getBalance()
+
+const address = await wallet.getAddress()
+
+6. Once we have balance and address, we can sign a txn using wallet
+   const tx = await wallet.signMessage("Hello World")
+
+7. We can transfer funds to another account
+   const tx = {to: <address>, value: ethers.utils.parseEther("0.01)}
+
+const transferTx = await wallet.sendTransaction(tx)
+const txReceipt = await transferTx.wait(1) // waits 1 block
+
+8. Abbove showed how we can connect to a ethereum node implementation (Geth/parity or infrastructure provider infura/alchemy) - via JSON-RPC-API.
+
+9. We can do the same to connect a front end application to node - assuming front end application is running on Metamasl
+
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+window.ethereum is an objected injected into browser by metamask - this in essence is the JSON RPC Provider - Metamask helps in both connecting to a node and signing a txn
+
+// once above is done, get signer
+const signer = provider.getSigner()
