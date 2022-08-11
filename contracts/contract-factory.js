@@ -1,7 +1,7 @@
 const { ethers } = require("ethers")
 require("dotenv").config()
 
-const { weth_contract_abi, weth_contract_bytecode } = require("./weth_contract_abi")
+const { weth_contract_abi, weth_contract_bytecode } = require("../contract-abis/weth_contract_abi")
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 

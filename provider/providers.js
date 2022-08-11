@@ -14,7 +14,7 @@ const TRANSFER_TXN_HASH = "0xbb1a7c88bde4e82ece4394bd47632fa9d8be3d92478716ef33b
  * In ethers-api-providers.js, I try out all third party api providers (infura/alchemy/ankr etc)
  * In this method, I mainly look at generic JsonRpcProvider()
  */
-const GetProvider = async () => {
+const getProvider = async () => {
     // get provider instance
 
     console.log("generic provider instance can be initiated by using JsonRpcProvice")
@@ -30,7 +30,7 @@ const GetProvider = async () => {
  * Explore Provider Account methods
  * /// @dev in this method, I try to explore all methods supported by provider object
  * */
-const ExploreProviderAccountMethods = async () => {
+const exploreProviderAccountMethods = async () => {
     const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
 
     //GET BALANCE
@@ -99,7 +99,7 @@ const ExploreProviderAccountMethods = async () => {
  *
  */
 
-const ExploreProviderBlockMethods = async () => {
+const exploreProviderBlockMethods = async () => {
     // GET BLOCK
 
     console.log("getBlock() is an async function that returns a promise of a block")
@@ -147,7 +147,7 @@ const ExploreProviderBlockMethods = async () => {
  * //@dev experiment with functions to resolve ENS name
  */
 
-const ExploreProviderENSMethods = async () => {
+const exploreProviderENSMethods = async () => {
     // Note - for this, get the mainnet provider
     const provider = new ethers.providers.JsonRpcProvider(MAINNET_RPC_URL)
 
@@ -265,7 +265,7 @@ const ExploreProviderENSMethods = async () => {
  ///@dev method shows how to get network details from provider using ethers.js library 
  */
 
-const GetNetworkDetails = async () => {
+const getContractLogs = async () => {
     // given provider - get chainId, network name
 
     const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
@@ -333,11 +333,35 @@ const GetNetworkDetails = async () => {
     console.log("Network ready", isNetworkReady)
 }
 
+/**
+ * get logs
+ * @dev provider has logs - we can fetch all logs from a provider
+ * note that this is generic & sometimes there might be too much data to fetch in one go
+ */
+const getLogs = async () => {
+    const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
+    const endBlock = await provider.getBlockNumber()
+    const startBlock = 11182883
+
+    let filterLogs = {
+        fromBlock: startBlock,
+        toBlock: endBlock,
+        topics: ["0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"],
+    }
+
+    const logs = await provider.getLogs(filterLogs)
+
+    console.log("logs size", logs.length)
+    logs.map((log) => {
+        console.log(log)
+    })
+}
+
 /***
  * @dev - ExploreProviderTransactionMethods is used to play around with transaction related provider functionality
  *
  */
-const ExploreProviderTransactionMethods = async () => {
+const exploreProviderTransactionMethods = async () => {
     const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
 
     //GET TRANSACTION
@@ -416,7 +440,7 @@ const ExploreProviderTransactionMethods = async () => {
  * useful for calling getters on contracts
  */
 
-const ExploreCallFunction = async () => {
+const exploreCallFunction = async () => {
     const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
 
     console.log(`Using a random contract call with txnHash: ${TXN_HASH}`)
@@ -456,3 +480,20 @@ const ExploreCallFunction = async () => {
         console.log("--------------------")
     }
 }
+
+const main = async () => {
+    // getProvider()
+    // exploreProviderAccountMethods()
+    // exploreProviderBlockMethods()
+    // exploreProviderENSMethods()
+    // getContractLogs()
+    getLogs()
+    // exploreProviderTransactionMethods()
+    // exploreCallFunction()
+}
+
+main()
+    .then(() => {
+        console.log("ran successfully")
+    })
+    .catch((e) => console.log(e))

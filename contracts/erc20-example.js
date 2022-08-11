@@ -6,7 +6,7 @@
  */
 
 const { ethers } = require("ethers")
-const { erc20_abi, erc20_bytecode } = require("./erc20_abi")
+const { erc20_abi, erc20_bytecode } = require("../contract-abis/erc20_abi")
 require("dotenv").config()
 
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL
@@ -101,6 +101,7 @@ const getContractInfo = async (contract) => {
 
     console.log("Calling get functions in the contract...")
     console.log(`Token name: ${tokenName}, symbol: ${symbol} and supply: ${supply}`)
+    console.log("Completed reading")
 }
 
 /**
@@ -112,6 +113,7 @@ const getContractInfo = async (contract) => {
  * @dev to generate an error, I also transfer tokens which don't exist
  */
 const usingCallStatic = async (contract) => {
+    console.log("using call static functions...")
     const provider = new ethers.providers.JsonRpcProvider(RINKEBY_RPC_URL)
     const receiverWallet = new ethers.Wallet(RECEPIENT_KEY, provider)
 
@@ -140,12 +142,15 @@ const usingCallStatic = async (contract) => {
     } catch (e) {
         console.log(e)
     }
+
+    console.log("completed call static function..")
 }
 
 /** makeTransactions() - we will make changes to state of blockchain
  * @dev run the mint() and transfer() functions and recheck changed state
  */
 const makeTransactions = async (contract) => {
+    console.log("Initiating mint transactions...")
     const recepient = new ethers.Wallet(RECEPIENT_KEY, contract.provider)
 
     const oldSupply = await contract.totalSupply()
@@ -177,6 +182,7 @@ const makeTransactions = async (contract) => {
         "balance in recepient wallet before transfer",
         recepientBalanceAfterTransfer.toString()
     )
+    console.log("Completed mint transactions")
 }
 
 /** In listenToEvents(), I will listen to various events */
@@ -203,20 +209,31 @@ const listenToEvents = (contract) => {
     })
 }
 
-const captureLogs = (contract) => {
+// In capture logs, I attempt to capture all logs
+const captureLogs = async (contract) => {
+    console.log("Entering capturing logs...")
     //TO DO
+    const transferFilter = contract.filters["Transfer(address,address,uint256)"]
+
+    console.log(">const logs = await contract.queryFilter(transferFilter, -10, 'latest'")
+    console.log("filters logs in last 10 blocks from the latest")
+    const logs = await contract.queryFilter(transferFilter, -10, "latest")
+
+    logs.map((log, indx) => console.log(`log #${indx}`, log))
+
+    console.log("Logs captured...")
 }
 
-const main = () => {
+const main = async () => {
     try {
         // deployContract()
         const contract = accessContract()
         // getContractInfo(contract)
         // usingCallStatic(contract)
         listenToEvents(contract)
-        makeTransactions(contract)
+        await makeTransactions(contract)
         // listenToEvents(contract)
-        // captureLogs(contract)
+        await captureLogs(contract)
     } catch (e) {
         console.log(e)
     }
